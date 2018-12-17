@@ -147,7 +147,7 @@
 		var LINK_KEY = "JUMP_LINK";
 		var jumpLink = window.localStorage.getItem(LINK_KEY);
 
-		if(!!jumpLink) {
+		if(!!jumpLink && !queryObj.next) {
 			domCopyInp.value = decodeURIComponent(jumpLink);
 			new ClipboardJS('#copy-btn');
 			domCopyBtn.style.display = "block";
@@ -169,7 +169,7 @@
 			tImgDom.src = !!queryObj.plug ? queryObj.plug : "http://bigpic1.u9if.cn/bigpic.png";
 			tImgDom.style.display = "none";
 			document.body.appendChild(tImgDom);
-			
+
 			setTimeout(function(){
 				window.location.reload();
 			},120000);
