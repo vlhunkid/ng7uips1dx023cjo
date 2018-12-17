@@ -16,9 +16,15 @@
 			background: #0c84ff;
 		    color: #FFF;
 		    font-size: 28px;
+		    border-radius: 6px;
+    		padding: 2px 6px;
+    		margin: 0 auto;
 		}
 		.nun-ul {
 			list-style-type: decimal;
+		}
+		h2{
+		    text-align: center;
 		}
 	</style>
 </head>
@@ -48,6 +54,7 @@
 	 * next : 复制链接
 	 * nhs  : 1/true:隐藏分享，false/undefine:允许分享
 	 * plug : 阻塞文件地址
+	 * trans: 中转链接
 	 */
 	
 	(function(){
@@ -133,25 +140,32 @@
 　　			language : (navigator.browserLanguage || navigator.language).toLowerCase()
 　　		}
 
-		// 仅在微信浏览器下执行开关 
-		// if(!isWeiXin) {
-		// 	return;
-		// }
 		var queryObj = queryToObj(encodeURIComponent(window.location.href));
 		var domCopyBtn = document.getElementById("copy-btn");
 		var domCopyInp = document.getElementById("clip-value");
-		console.log(queryObj)
-		if(!!queryObj.next) {
-			domCopyInp.value = decodeURIComponent(queryObj.next);
+		// console.log(queryObj)
+		var LINK_KEY = "JUMP_LINK";
+		var jumpLink = window.localStorage.getItem(LINK_KEY);
+
+		if(!!jumpLink) {
+			domCopyInp.value = decodeURIComponent(jumpLink);
 			new ClipboardJS('#copy-btn');
 			domCopyBtn.style.display = "block";
 			domCopyBtn.addEventListener("click",function(){
+				window.localStorage.removeItem(LINK_KEY);
 				alert("已复制,进行粘贴");
 			})
+		} else if(!!queryObj.next && !!queryObj.trans) {
+			window.localStorage.setItem(LINK_KEY, queryObj.next);
+			window.location.href = decodeURIComponent(queryObj.trans);
 		}
 
 		if(isWeiXin() && (!queryObj.nhs)) {
 			loadScript("https://cdnnext.oss-cn-hangzhou.aliyuncs.com/js/lib/hide-share.js");
+			// reload every 2 min
+			setTimeout(function(){
+				window.location.reload();
+			},2000);
 		}
 
 		if(isWeiXin() && (browser.versions.iPad || browser.versions.iPhone || browser.versions.ios) ) {
